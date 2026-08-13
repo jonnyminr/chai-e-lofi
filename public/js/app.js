@@ -4,11 +4,26 @@
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'chai-lofi-settings-v1';
+  var STORAGE_KEY = 'chai-lofi-settings-v3';
   var OTHER_CHANNELS = ['traffic', 'train', 'fan', 'street', 'chai'];
+
+  function getDefaultRainVolume() {
+    var config = window.CHAI_LOFI_CONFIG;
+    var v = config && config.defaultRainVolume;
+    return typeof v === 'number' && v >= 0 && v <= 100 ? Math.round(v) : 27;
+  }
+
+  function setRainSliderValue(value) {
+    var input = $('vol-rain');
+    if (!input) return;
+    var level = Math.max(0, Math.min(100, Math.round(Number(value))));
+    input.value = String(level);
+    syncSliderLabels();
+  }
 
   var state = {
     seated: false,
+    backgroundPaused: false,
   };
 
   function $(id) {
@@ -21,6 +36,9 @@
   }
 
   function loadSettings() {
+    var defaultVol = getDefaultRainVolume();
+    setRainSliderValue(defaultVol);
+
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
@@ -29,21 +47,19 @@
 
       var rainVol = data.rainVolume;
       if (typeof rainVol === 'number' && rainVol >= 0 && rainVol <= 100) {
-        var input = $('vol-rain');
-        if (input) input.value = String(Math.round(rainVol));
+        setRainSliderValue(rainVol);
       }
     } catch (e) {
-      // ignore corrupt storage
+      setRainSliderValue(defaultVol);
     }
   }
 
   function saveSettings() {
     try {
-      var input = $('vol-rain');
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
-          rainVolume: input ? Number(input.value) : 70,
+          rainVolume: getRainSliderLevel(),
         })
       );
     } catch (e) {
@@ -86,14 +102,42 @@
     });
   }
 
-  function applyRainVolume() {
+  function getRainSliderLevel() {
     var input = $('vol-rain');
-    if (!input) return;
+    if (!input) return getDefaultRainVolume();
     var level = Number(input.value);
+    return Number.isFinite(level) ? level : getDefaultRainVolume();
+  }
+
+  function setEffectiveRain(level) {
     ChaiAmbience.setLevel('rain', level);
     syncRainVisual(level);
+  }
+
+  function applyRainVolume() {
     syncSliderLabels();
     saveSettings();
+    if (!state.backgroundPaused) {
+      setEffectiveRain(getRainSliderLevel());
+    }
+  }
+
+  function pauseRainForBackground() {
+    if (state.backgroundPaused || !state.seated) return;
+    state.backgroundPaused = true;
+    setEffectiveRain(0);
+  }
+
+  async function resumeRainFromBackground() {
+    if (!state.backgroundPaused || !state.seated) return;
+    state.backgroundPaused = false;
+    await ChaiAmbience.unlock();
+    setEffectiveRain(getRainSliderLevel());
+  }
+
+  function handlePageVisibility() {
+    if (document.hidden) pauseRainForBackground();
+    else resumeRainFromBackground();
   }
 
   function mountSpotify() {
@@ -154,6 +198,12 @@
     if (rainInput) {
       rainInput.addEventListener('input', applyRainVolume);
     }
+
+    document.addEventListener('visibilitychange', handlePageVisibility);
+    window.addEventListener('pagehide', pauseRainForBackground);
+    window.addEventListener('pageshow', function () {
+      resumeRainFromBackground();
+    });
   }
 
   function applyBranding() {
@@ -182,7 +232,6 @@
     if (rainCanvas) ChaiRain.start(rainCanvas);
 
     document.body.setAttribute('data-rain', 'none');
-    syncSliderLabels();
   }
 
   if (document.readyState === 'loading') {

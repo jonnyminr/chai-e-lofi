@@ -12,4 +12,6 @@ window.CHAI_LOFI_CONFIG = Object.freeze({
   tagline: 'One cutting chai. One more song.',
   musicAttribution: 'Music powered by Spotify.',
   playlistLabel: 'Playlist powered by Spotify',
+  /** Default rain slider level (0–100) */
+  defaultRainVolume: 27,
 });
