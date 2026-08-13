@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="chai-e-lofi — Rain, chai vibes, and a Spotify playlist." />
+  <meta name="theme-color" content="#0a1520" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src https://open.spotify.com https://embed.spotify.com; child-src https://open.spotify.com https://embed.spotify.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta name="robots" content="index,follow" />
+  <title>chai-e-lofi — One cutting chai. One more song.</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to experience</a>
+
+  <div id="grain" class="grain" aria-hidden="true"></div>
+  <canvas id="rain-canvas" class="rain-canvas" aria-hidden="true"></canvas>
+
+  <div class="sky" aria-hidden="true"></div>
+
+  <main id="main" class="scene" data-phase="intro">
+    <section id="intro" class="intro" aria-labelledby="brand-title">
+      <p class="time-whisper" id="time-message" role="status"></p>
+      <h1 id="brand-title" class="brand">chai-e-lofi</h1>
+      <p class="tagline">One cutting chai.<br />One more song.</p>
+      <button type="button" id="sit-down" class="btn-sit" aria-describedby="sit-hint">
+        Sit Down
+      </button>
+      <p id="sit-hint" class="hint">Rain outside. Music inside. Powered by Spotify.</p>
+    </section>
+
+    <section id="experience" class="experience" aria-label="Spotify playlist" hidden>
+      <div class="player-dock" id="player-dock">
+        <div class="now-playing">
+          <h2 class="experience-brand" id="experience-brand">chai-e-lofi</h2>
+          <p class="experience-tagline" id="experience-tagline">One cutting chai.<br />One more song.</p>
+          <p class="spotify-attr">Music powered by Spotify.</p>
+        </div>
+        <div class="cassette-frame">
+          <div class="cassette-top" aria-hidden="true">
+            <span class="reel"></span>
+            <span class="reel"></span>
+          </div>
+          <div id="spotify-mount" class="spotify-mount" role="region" aria-label="Spotify playlist player"></div>
+          <p class="playlist-powered">Playlist powered by Spotify</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside id="controls" class="controls controls-rain" aria-label="Rain sound" hidden>
+    <div class="controls-inner">
+      <label class="slider-row">
+        <span class="slider-name">Rain</span>
+        <input type="range" id="vol-rain" min="0" max="100" value="70" aria-valuetext="70 percent" />
+        <span class="slider-val" data-for="vol-rain">70%</span>
+      </label>
+    </div>
+  </aside>
+
+  <div id="sr-announce" class="sr-only" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="js/spotify.js"></script>
+  <script src="js/ambience.js"></script>
+  <script src="js/rain.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

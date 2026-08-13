@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# No third-party crawl hints beyond the public static experience.

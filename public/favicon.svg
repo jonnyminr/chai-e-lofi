@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="chai-e-lofi">
+  <rect width="64" height="64" rx="12" fill="#0a1520"/>
+  <ellipse cx="32" cy="14" rx="14" ry="10" fill="#e8a54b" opacity="0.35"/>
+  <path d="M22 22h20l-3 28H25z" fill="none" stroke="#c8d0d8" stroke-width="2"/>
+  <path d="M24 36h16v12c0 2-2 4-8 4s-8-2-8-4V36z" fill="#8b4513"/>
+  <path d="M28 18c0-6 2-10 2-10m4 10c0-6 2-10 2-10m4 12c0-5 1-8 1-8" fill="none" stroke="#dce6f0" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+</svg>
