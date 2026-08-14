@@ -140,19 +140,110 @@
     else resumeRainFromBackground();
   }
 
-  function mountSpotify() {
-    var mount = $('spotify-mount');
+  function mountYoutube() {
+    var mount = $('youtube-mount');
     var config = window.CHAI_LOFI_CONFIG;
     if (!mount || !config) {
-      if (mount) ChaiSpotify.showError(mount, 'Configuration missing.');
+      if (mount) ChaiYoutube.showError(mount, 'Configuration missing.');
       return;
     }
-    var result = ChaiSpotify.validatePlaylistUrl(config.spotifyPlaylistUrl);
+    var result = ChaiYoutube.validatePlaylistUrl(config.youtubePlaylistUrl);
     if (!result.ok) {
-      ChaiSpotify.showError(mount, result.error + ' Music powered by Spotify.');
+      ChaiYoutube.showError(mount, result.error + ' Music powered by YouTube.');
       return;
     }
-    ChaiSpotify.mountEmbed(mount, result.embedUrl);
+    ChaiYoutube.mountEmbed(mount, result);
+    
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      var m = Math.floor(seconds / 60);
+      var s = Math.floor(seconds % 60);
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    var playBtn = $('yt-play-btn');
+    var prevBtn = $('yt-prev-btn');
+    var nextBtn = $('yt-next-btn');
+    var volBtn = $('yt-vol-btn');
+    var progressBar = $('yt-progress-bar');
+    
+    if (playBtn) playBtn.addEventListener('click', function() { ChaiYoutube.togglePlay(); });
+    if (prevBtn) prevBtn.addEventListener('click', function() { ChaiYoutube.previousVideo(); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { ChaiYoutube.nextVideo(); });
+    if (volBtn) volBtn.addEventListener('click', function() { 
+      var isMuted = ChaiYoutube.toggleMute();
+      if (isMuted) volBtn.classList.add('is-muted');
+      else volBtn.classList.remove('is-muted');
+    });
+
+    var isScrubbing = false;
+    if (progressBar) {
+      progressBar.addEventListener('input', function() {
+        isScrubbing = true;
+        var dur = ChaiYoutube.getDuration();
+        var el = $('yt-time-current');
+        if (el) el.textContent = formatTime((progressBar.value / 100) * dur);
+      });
+      progressBar.addEventListener('change', function() {
+        isScrubbing = false;
+        var dur = ChaiYoutube.getDuration();
+        ChaiYoutube.seekTo((progressBar.value / 100) * dur);
+      });
+    }
+
+    var progressTimer = null;
+    function updateProgress() {
+      if (isScrubbing) return;
+      var curr = ChaiYoutube.getCurrentTime();
+      var dur = ChaiYoutube.getDuration();
+      if (dur > 0) {
+        var elC = $('yt-time-current');
+        var elT = $('yt-time-total');
+        if (elC) elC.textContent = formatTime(curr);
+        if (elT) elT.textContent = formatTime(dur);
+        if (progressBar) progressBar.value = (curr / dur) * 100;
+      }
+    }
+
+    ChaiYoutube.setOnStateChange(function (isPlaying, state) {
+      if (playBtn) {
+        if (isPlaying) playBtn.classList.add('is-playing');
+        else playBtn.classList.remove('is-playing');
+      }
+      
+      if (isPlaying) {
+        if (!progressTimer) progressTimer = setInterval(updateProgress, 1000);
+      } else {
+        if (progressTimer) {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+      }
+      
+      // Update info when unstarted (-1) or playing (1) as tracks change
+      if (state === 1 || state === -1) {
+        setTimeout(function() {
+          var data = ChaiYoutube.getVideoData();
+          if (data && data.title) {
+            var elTitle = $('yt-title');
+            var elAuthor = $('yt-author');
+            if (elTitle) elTitle.textContent = data.title;
+            if (elAuthor) elAuthor.textContent = data.author || '';
+          }
+        }, 500);
+      }
+    });
+
+    ChaiYoutube.setOnReady(function() {
+      var data = ChaiYoutube.getVideoData();
+      if (data && data.title) {
+        var elTitle = $('yt-title');
+        var elAuthor = $('yt-author');
+        if (elTitle) elTitle.textContent = data.title;
+        if (elAuthor) elAuthor.textContent = data.author || '';
+      }
+      updateProgress();
+    });
     var dock = $('player-dock');
     if (dock) dock.classList.add('is-active');
   }
@@ -177,13 +268,13 @@
       var scene = $('main');
       if (scene) scene.setAttribute('data-phase', 'seated');
 
-      mountSpotify();
+      mountYoutube();
 
       var controls = $('controls');
       if (controls) controls.hidden = false;
 
       ChaiEvents.start();
-      announce('Spotify playlist is ready. Adjust rain at the bottom.');
+      announce('YouTube playlist is ready. Adjust rain at the bottom.');
     }, 900);
   }
 

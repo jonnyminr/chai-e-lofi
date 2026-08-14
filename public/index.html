@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="chai-e-lofi — Rain, chai vibes, and a Spotify playlist." />
+  <meta name="description" content="chai-e-lofi — Rain, chai vibes, and a YouTube playlist." />
   <meta name="theme-color" content="#0a1520" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src https://open.spotify.com https://embed.spotify.com; child-src https://open.spotify.com https://embed.spotify.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com https://s.ytimg.com; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube.com; child-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta name="robots" content="index,follow" />
@@ -30,23 +30,41 @@
       <button type="button" id="sit-down" class="btn-sit" aria-describedby="sit-hint">
         Sit Down
       </button>
-      <p id="sit-hint" class="hint">Rain outside. Music inside. Powered by Spotify.</p>
+      <p id="sit-hint" class="hint">Rain outside. Music inside. Powered by YouTube.</p>
     </section>
 
-    <section id="experience" class="experience" aria-label="Spotify playlist" hidden>
+    <section id="experience" class="experience" aria-label="YouTube playlist" hidden>
       <div class="player-dock" id="player-dock">
         <div class="now-playing">
           <h2 class="experience-brand" id="experience-brand">chai-e-lofi</h2>
           <p class="experience-tagline" id="experience-tagline">One cutting chai.<br />One more song.</p>
-          <p class="spotify-attr">Music powered by Spotify.</p>
+          <p class="youtube-attr">Music powered by YouTube.</p>
         </div>
         <div class="cassette-frame">
           <div class="cassette-top" aria-hidden="true">
             <span class="reel"></span>
             <span class="reel"></span>
           </div>
-          <div id="spotify-mount" class="spotify-mount" role="region" aria-label="Spotify playlist player"></div>
-          <p class="playlist-powered">Playlist powered by Spotify</p>
+          <div id="youtube-mount" class="youtube-mount" role="region" aria-label="YouTube playlist player"></div>
+          
+          <div class="yt-player-ui">
+            <div class="yt-info-container">
+              <h3 id="yt-title" class="yt-title">Loading...</h3>
+              <p id="yt-author" class="yt-author"></p>
+            </div>
+            <div class="yt-progress-container">
+              <span id="yt-time-current">0:00</span>
+              <input type="range" id="yt-progress-bar" min="0" max="100" value="0" />
+              <span id="yt-time-total">0:00</span>
+            </div>
+            <div class="yt-controls-container">
+              <button id="yt-prev-btn" class="ctrl-btn prev-btn" aria-label="Previous"></button>
+              <button id="yt-play-btn" class="custom-play-btn" aria-label="Play/Pause"></button>
+              <button id="yt-next-btn" class="ctrl-btn next-btn" aria-label="Next"></button>
+              <button id="yt-vol-btn" class="ctrl-btn vol-btn" aria-label="Mute"></button>
+            </div>
+          </div>
+          <p class="playlist-powered">Playlist powered by YouTube</p>
         </div>
       </div>
     </section>
@@ -65,7 +83,7 @@
   <div id="sr-announce" class="sr-only" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="js/spotify.js"></script>
+  <script src="js/youtube.js"></script>
   <script src="js/ambience.js"></script>
   <script src="js/rain.js"></script>
   <script src="js/events.js"></script>
